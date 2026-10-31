@@ -1,0 +1,21 @@
+{
+  "sources": {
+    "EC1700SIZECONCEN.zip": "https://www2.census.gov/programs-surveys/economic-census/data/2017/sector00/EC1700SIZECONCEN.zip",
+    "EC2200SIZECONCEN.zip": "https://www2.census.gov/programs-surveys/economic-census/data/2022/sector00/EC2200SIZECONCEN.zip",
+    "EC1731BASIC.zip": "https://www2.census.gov/programs-surveys/economic-census/data/2017/sector31/EC1731BASIC.zip",
+    "EC2231BASIC.zip": "https://www2.census.gov/programs-surveys/economic-census/data/2022/sector31/EC2231BASIC.zip",
+    "AllTablesIO.zip": "https://apps.bea.gov/industry/iTables%20Static%20Files/AllTablesIO.zip"
+  },
+  "sha256": {
+    "EC1700SIZECONCEN.zip": "1070a9b09bd23785b03eb96d1980ba5659320f7fa9a4fda52f2252f42109f78d",
+    "EC2200SIZECONCEN.zip": "36d2e51cfb82adc9187c6f0a8fdfcd29ce0d3418e6b4d00e085d0c609e24ce30",
+    "EC1731BASIC.zip": "d32bd0d70f5bd19bf47bb11ac62c4a8a5cc9d7b3e003341edf38457356f9f8a1",
+    "EC2231BASIC.zip": "eb1fd1a27a54550cffdaa1c19a97f2807547a47d15ed8c63ee14e97f04dbca0b",
+    "AllTablesIO.zip": "ab316fa88157f8a96270334b1a6afa664fcf39a6c94f9c8e4ad061d930e81918"
+  },
+  "rows": 706,
+  "industries_by_year": {
+    "2017": 360,
+    "2022": 346
+  }
+}

@@ -1,6 +1,6 @@
 # Durability and Monopoly Revisited, Simulating Coase (1972)
 
-*Technical companion to the essay in the [README](../README.md). Brendyn Beasley.*
+*Technical companion to the empirical study in the [README](../README.md) and the essay in [docs/essay.md](../docs/essay.md).*
 
 ## Abstract
 
@@ -9,6 +9,8 @@ Coase (1972) argued that a monopolist selling a perfectly durable good cannot ch
 In an infinite-horizon game with uniform valuations, the seller's opening price is √(1−δ)/(1+√(1−δ)). It falls to cost as the time between price cuts shrinks. With a 10% annual interest rate, profit drops from 47% of the monopoly level with yearly price changes to 0.7% with hourly changes.
 
 In a two-period model, leasing restores the full monopoly profit (0.50 against 0.45 from selling). A selling monopolist that can choose durability builds an inefficiently short-lived good whenever unit production cost is below 0.2, while a lessor and a social planner choose full durability. All four of Coase's main claims hold in these models. The durability result holds only when production is cheap.
+
+I then take the prediction to data. Across 6-digit U.S. manufacturing industries in the 2017 and 2022 Economic Censuses, the slope of the price-cost margin on four-firm concentration is 0.120 for nondurable industries and −0.029 for long-lived durable goods bought by final owners. The difference of −0.148 has p = 0.059 with clustered standard errors and p = 0.026 in a permutation test, and it is negative in all ten robustness specifications, though significant in only some.
 
 ## 1. Introduction
 
@@ -74,12 +76,32 @@ The models use linear demand, uniform valuations, a stationary market and consta
 
 Natural extensions would add a stream of new buyers to Model A, build a multi-period durability model with depreciation, use non-uniform valuation distributions including the "gap" case where cost is below the lowest valuation, and test the predictions on data, for example the speed of price declines for durable products sold by dominant firms.
 
+## 5. Empirical test
+
+**Prediction.** Models A and B imply that a durable-goods seller's market power depends on its ability to commit, not on its market share alone. In a cross-section of industries, this predicts that the slope of the price-cost margin on concentration, positive since Bain (1951), should be attenuated in durable-goods industries. It should be most attenuated for long-lived goods held by final owners, where the stock of past sales competes directly with new sales.
+
+**Data.** The unit is a 6-digit NAICS manufacturing industry in the 2017 and 2022 Economic Censuses (N = 706, of which 699 have complete data). Concentration (CR4, CR8, HHI) comes from the *Concentration of Largest Firms* tables. Shipments, payroll, benefits, value added and gross depreciable assets come from the manufacturing summary statistics. Durable versus nondurable follows the Census M3 definition. For each industry, the final-owner share is the share of domestic use (intermediate use plus final uses, excluding exports, imports and inventory change) going to personal consumption expenditures plus private and government equipment investment, from the BEA 2017 detailed Use table (before redefinitions, producers' prices), matched by longest NAICS prefix. Durable industries with a final-owner share of at least 0.5 are classed as durable final.
+
+**Specification.** With g ∈ {nondurable, durable intermediate, durable final},
+
+PCM_it = α_g + β_g·CR4_it + γ·(K/S)_it + δ·log S_it + τ_t + ε_it,
+
+where PCM = (value added − payroll)/shipments (Collins and Preston 1969). Standard errors are clustered by 6-digit industry. The test of interest is H₀: β_final − β_nondurable = 0 against β_final < β_nondurable.
+
+**Results.** The estimated slopes are β_nondurable = 0.120 (0.070), β_intermediate = 0.045 (0.038) and β_final = −0.029 (0.038). The contrast β_final − β_nondurable = −0.148 has a clustered p-value of 0.059. A permutation test that reassigns group labels across industries (2,000 draws, labels held fixed within industry across years) gives p = 0.026. In first differences over 2017–2022 for the 325 industries with unchanged codes, the contrast is −0.196 (p = 0.090). Using Bain's own 70 percent CR8 threshold, the margin gap between concentrated and unconcentrated industries is +0.047 (0.019) for nondurables, +0.028 (0.016) for durable intermediates and −0.022 (0.015) for durable final goods.
+
+Across ten alternative specifications (subsector fixed effects, shipment weights, benefits-adjusted margins, HHI or CR8 in place of CR4, winsorized margins, a private-buyer-only definition of final owners, and each year separately), the contrast is negative in every case, significant at 10 percent in six and at 5 percent in two. It is weakest with 3-digit subsector fixed effects (−0.079, p = 0.233), which absorb most of the between-group variation, and with shipment weights (−0.102, p = 0.501), which concentrate the weight on a few very large industries.
+
+**Caveats.** The estimates are conditional correlations. Plausible confounders include import competition, buyer power in capital-goods markets, cyclicality, and the inclusion of capital, advertising and R&D returns in accounting margins. National concentration ratios ignore imports and geographic market definition. The M3 durable classification is coarse (for example, ammunition is classified as durable). All code and data needed to reproduce these numbers are in the repository (`make all`).
+
 ## References
 
 - Ausubel, L., & Deneckere, R. (1989). Reputation in Bargaining and Durable Goods Monopoly. *Econometrica*, 57(3), 511–531.
 - Bulow, J. (1982). Durable-Goods Monopolists. *Journal of Political Economy*, 90(2), 314–332.
 - Bulow, J. (1986). An Economic Theory of Planned Obsolescence. *Quarterly Journal of Economics*, 101(4), 729–749.
+- Bain, J. S. (1951). Relation of Profit Rate to Industry Concentration: American Manufacturing, 1936–1940. *Quarterly Journal of Economics*, 65(3), 293–324.
 - Coase, R. H. (1972). Durability and Monopoly. *Journal of Law & Economics*, 15(1), 143–149.
+- Collins, N. R., & Preston, L. E. (1969). Price-Cost Margins and Industry Structure. *Review of Economics and Statistics*, 51(3), 271–286.
 - Gul, F., Sonnenschein, H., & Wilson, R. (1986). Foundations of Dynamic Monopoly and the Coase Conjecture. *Journal of Economic Theory*, 39(1), 155–190.
 - Sobel, J. (1991). Durable Goods Monopoly with Entry of New Consumers. *Econometrica*, 59(5), 1455–1485.
 - Stokey, N. (1981). Rational Expectations and Durable Goods Pricing. *Bell Journal of Economics*, 12(1), 112–128.

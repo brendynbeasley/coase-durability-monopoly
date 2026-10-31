@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "coase"
 version = "0.1.0"
-description = "Simulations of Coase (1972), Durability and Monopoly"
+description = "Theory and an empirical test of Coase (1972), Durability and Monopoly"
 requires-python = ">=3.10"
-dependencies = ["numpy", "scipy", "matplotlib"]
+dependencies = ["numpy", "scipy", "matplotlib", "pandas", "statsmodels", "openpyxl"]
 
 [project.optional-dependencies]
 test = ["pytest"]
