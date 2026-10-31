@@ -1,4 +1,6 @@
-# Durability and Monopoly Revisited: Simulating Coase (1972)
+# Durability and Monopoly Revisited, Simulating Coase (1972)
+
+*Technical companion to the essay in the [README](../README.md). Brendyn Beasley.*
 
 ## Abstract
 
@@ -12,9 +14,9 @@ In a two-period model, leasing restores the full monopoly profit (0.50 against 0
 
 Coase's note is eight pages long, contains no equations and has two diagrams. Its argument is simple. A landowner owns all the land in a country, and the textbook monopoly rule says to sell the quantity OM where marginal revenue is zero, at price OA (Figure I). But after OM is sold, the owner still holds MQ and can make more money by selling some of it. The resulting price fall lands on those who already bought. Repeating this logic, the owner ends up selling the entire stock OQ. Buyers who understand this will not pay more than the competitive price OB. In Coase's words, a monopolist of a durable good faces a demand schedule that is "infinitely elastic at the competitive price."
 
-The problem is one of **commitment** (or *time inconsistency*). The monopolist would like to promise to restrict supply, but the promise is not credible once the first sales are made. Coase lists remedies: a contractual promise not to sell more, a buy-back guarantee, leasing instead of selling, donating the surplus stock, and making the good less durable.
+The problem is one of commitment, or time inconsistency. The monopolist would like to promise to restrict supply, but the promise is not credible once the first sales are made. Coase lists several remedies, namely a contractual promise not to sell more, a buy-back guarantee, leasing instead of selling, donating the surplus stock, and making the good less durable.
 
-This study asks: **Do Coase's claims survive when the argument is written as an explicit game and solved numerically?** We answer with three exercises, all reproducible with the code in this repository.
+This study asks whether Coase's claims survive when the argument is written as an explicit game and solved numerically. We answer with three exercises, all reproducible with the code in this repository.
 
 ## 2. Model A: the Coase conjecture
 
@@ -64,27 +66,13 @@ The third result refines Coase's claim. Reduced durability is a profitable escap
 
 ## 4. Discussion
 
-The simulations support Coase's four main claims:
+The simulations support Coase's four main claims. Without commitment, a durable-goods monopolist's price falls toward the competitive level, and it falls faster the more often the seller can change its price. Leasing, commitment and buy-backs restore monopoly profit. Reduced durability can be profitable, though only under some cost conditions.
 
-1. Without commitment, a durable-goods monopolist's price falls toward the competitive level.
-2. The fall is faster the more often the seller can change its price.
-3. Leasing, commitment and buy-backs restore monopoly profit.
-4. Reduced durability can be profitable, but only under some cost conditions.
+The models help explain several real business practices, including leasing by firms such as IBM and Xerox in the mid-20th century, buy-back guarantees, "limited editions" that promise a fixed quantity, and frequent new product versions that make old ones obsolete. They also bear on competition policy. A single seller of a durable good may have far less market power than its market share suggests, and practices that look anticompetitive, such as leasing-only contracts, may be the only way such a seller can earn monopoly profit.
 
-**Why it matters.** The models explain several real business practices: leasing by firms such as IBM and Xerox in the mid-20th century, buy-back guarantees, "limited editions" that promise a fixed quantity, and frequent new product versions that make old ones obsolete. They also matter for competition policy. A single seller of a durable good may have far less market power than its market share suggests, and practices that look anticompetitive, such as leasing-only contracts, may be the only way such a seller can earn monopoly profit.
+The models use linear demand, uniform valuations, a stationary market and constant marginal cost. Coase himself flags three qualifications that are not modelled here. Rising marginal cost spreads production over time. Reputation may matter, since the seller may not want to disappoint buyers' expectations, and Ausubel and Deneckere (1989) show that reputational equilibria can support near-monopoly prices. Growing demand, in the form of new buyers arriving over time, weakens the conjecture (Sobel 1991).
 
-**Limitations.** The models use linear demand and uniform valuations, a stationary market, and constant marginal cost. Coase himself flags three qualifications not modelled here:
-
-- **Rising marginal cost** spreads production over time.
-- **Reputation:** the seller may not want to disappoint buyers' expectations. Ausubel & Deneckere (1989) show reputational equilibria can support near-monopoly prices.
-- **Growing demand:** new buyers arriving over time weaken the conjecture (Sobel 1991).
-
-**Extensions.**
-
-- Add a stream of new buyers to Model A.
-- Use a multi-period durability model with depreciation.
-- Use non-uniform valuation distributions, including the "gap" case where cost is below the lowest valuation.
-- Test the predictions on data, for example the speed of price declines for durable products sold by dominant firms.
+Natural extensions would add a stream of new buyers to Model A, build a multi-period durability model with depreciation, use non-uniform valuation distributions including the "gap" case where cost is below the lowest valuation, and test the predictions on data, for example the speed of price declines for durable products sold by dominant firms.
 
 ## References
 
