@@ -2,8 +2,6 @@
 
 *An essay on Ronald Coase's "Durability and Monopoly" (1972), with simulations I built to test it and a look at the industries where his idea is playing out now.*
 
-By Brendyn Beasley
-
 ---
 
 On October 14, 2025, Microsoft stopped sending security updates to Windows 10. Nothing happened to the computers that morning. They started up, opened files and connected to the internet the way they had the day before. What changed was their future. Analysts estimated that somewhere between 200 and 240 million of those machines did not meet the hardware requirements for Windows 11, so their owners were left to pay for extended updates, keep using an unprotected computer, or buy a new one. Microsoft explained the decision in terms of security, and there is a real security case for it. It is also a very old economic story, and the clearest account of it was written more than fifty years ago, long before anyone was selling software.
