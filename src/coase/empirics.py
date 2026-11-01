@@ -12,7 +12,8 @@ H3. The flattening is strongest for long-lived goods bought by final owners
     and weaker for durable intermediate inputs that are used up inside other
     products.
 
-Main specification (pooled 2017 and 2022, standard errors clustered by industry):
+Main specification (pooled Economic Censuses 2002, 2007, 2012, 2017 and 2022,
+standard errors clustered by 6-digit industry):
 
     PCM_it = a_g + b_g * CR4_it + c * K/S_it + d * log(shipments)_it + year_t + e_it
 
@@ -79,10 +80,29 @@ def group_slopes(s: pd.DataFrame, conc: str = "cr4", outcome: str = "pcm",
     return SlopeResult(name, int(m.nobs), slopes, diff_final, diff_durable)
 
 
+def _with(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    return sample(df.dropna(subset=cols))
+
+
+# Additional industry controls, added one at a time and then together.
+EXTRA_CONTROLS = {
+    "adv": "Advertising intensity",
+    "imp_pen": "Import penetration",
+    "rd": "R&D intensity",
+}
+
+
 def specifications(df: pd.DataFrame) -> list[SlopeResult]:
     out = []
     s = sample(df)
     out.append(group_slopes(s, name="Baseline (CR4)"))
+    out.append(group_slopes(s, extra=" + C(naics)", name="Industry fixed effects"))
+    available = [c for c in EXTRA_CONTROLS if c in df and df[c].notna().any()]
+    for c in available:
+        out.append(group_slopes(_with(df, [c]), extra=f" + {c}", name=f"+ {EXTRA_CONTROLS[c]}"))
+    if len(available) > 1:
+        out.append(group_slopes(_with(df, available), extra=" + " + " + ".join(available),
+                                name="+ All industry controls"))
     out.append(group_slopes(s, extra=" + C(subsector)", name="Subsector fixed effects"))
     out.append(group_slopes(s, weights=s.rcptot, name="Weighted by shipments"))
     s_b = sample(df, outcome="pcm_benefits")
@@ -95,10 +115,22 @@ def specifications(df: pd.DataFrame) -> list[SlopeResult]:
     out.append(group_slopes(s.assign(pcm=s.pcm.clip(lo, hi)), name="Margin winsorized 1%"))
     s_p = sample(df.assign(group=df.group_private))
     out.append(group_slopes(s_p, name="Private buyers only (no government)"))
-    for y in (2017, 2022):
-        sy = s[s.year == y]
-        out.append(group_slopes(sy, name=f"{y} only"))
+    out.append(group_slopes(s[s.year > 2002], name="Excluding 2002 (imputed capital)"))
+    for y in sorted(s.year.unique()):
+        out.append(group_slopes(s[s.year == y], name=f"{y} only"))
     return out
+
+
+def service_life_test(df: pd.DataFrame) -> dict | None:
+    """Continuous version of H3: among durable industries, does the
+    concentration slope fall as the product's service life rises?"""
+    if "life" not in df or df.life.isna().all():
+        return None
+    s = _with(df[df.durable == 1], ["life"])
+    m = _fit(f"pcm ~ cr4 * life + {CONTROLS}", s)
+    term = "cr4:life"
+    return {"n": int(m.nobs), "coef": m.params[term], "se": m.bse[term], "p": m.pvalues[term],
+            "cr4_at_0": m.params["cr4"], "life_mean": s.life.mean(), "life_sd": s.life.std()}
 
 
 def durables_continuous(df: pd.DataFrame, share: str = "final_share") -> dict:
@@ -135,25 +167,45 @@ def permutation_test(df: pd.DataFrame, draws: int = 2000, seed: int = 1972) -> d
 
 
 def first_differences(df: pd.DataFrame) -> dict:
-    """Within-industry changes 2017 -> 2022 for codes present in both years."""
-    a = df[df.year == 2017].set_index("naics")
-    b = df[df.year == 2022].set_index("naics")
-    common = a.index.intersection(b.index)
-    d = pd.DataFrame({
-        "d_pcm": b.loc[common, "pcm"] - a.loc[common, "pcm"],
-        "d_cr4": b.loc[common, "cr4"] - a.loc[common, "cr4"],
-        "d_ks": b.loc[common, "ks"] - a.loc[common, "ks"],
-        "group": a.loc[common, "group"],
-        "durable": a.loc[common, "durable"],
-    }).dropna()
+    """Within-industry changes between consecutive censuses (2002-07, 2007-12,
+    2012-17, 2017-22), stacked, for codes present in both years of a pair."""
+    years = sorted(df.year.unique())
+    parts = []
+    for y0, y1 in zip(years[:-1], years[1:]):
+        a = df[df.year == y0].set_index("naics")
+        b = df[df.year == y1].set_index("naics")
+        common = a.index.intersection(b.index)
+        parts.append(pd.DataFrame({
+            "d_pcm": b.loc[common, "pcm"] - a.loc[common, "pcm"],
+            "d_cr4": b.loc[common, "cr4"] - a.loc[common, "cr4"],
+            "d_ks": b.loc[common, "ks"] - a.loc[common, "ks"],
+            "group": a.loc[common, "group"],
+            "period": f"{y0}-{y1}",
+            "naics": common,
+        }))
+    d = pd.concat(parts, ignore_index=True).dropna()
     d["group"] = pd.Categorical(d.group, categories=GROUPS)
-    m = smf.ols("d_pcm ~ 0 + C(group) + d_cr4:C(group) + d_ks", d).fit(cov_type="HC1")
+    m = smf.ols("d_pcm ~ 0 + C(group) + d_cr4:C(group) + d_ks + C(period)", d).fit(
+        cov_type="cluster", cov_kwds={"groups": pd.factorize(d.naics)[0]})
     t = m.t_test("d_cr4:C(group)[durable_final] - d_cr4:C(group)[nondurable] = 0")
     return {
         "n": int(m.nobs),
+        "periods": d.period.value_counts().sort_index().to_dict(),
         "slopes": {g: (m.params[f"d_cr4:C(group)[{g}]"], m.bse[f"d_cr4:C(group)[{g}]"]) for g in GROUPS},
         "diff_final": (float(np.squeeze(t.effect)), float(np.squeeze(t.sd)), float(np.squeeze(t.pvalue))),
     }
+
+
+def first_differences_by_period(df: pd.DataFrame) -> pd.DataFrame:
+    """The within-industry regression run separately for each census pair."""
+    years = sorted(df.year.unique())
+    rows = []
+    for y0, y1 in zip(years[:-1], years[1:]):
+        r = first_differences(df[df.year.isin([y0, y1])])
+        rows.append({"period": f"{y0}-{y1}", "n": r["n"],
+                     **{f"slope_{g}": r["slopes"][g][0] for g in GROUPS},
+                     "gap": r["diff_final"][0], "gap_se": r["diff_final"][1], "p": r["diff_final"][2]})
+    return pd.DataFrame(rows)
 
 
 def bain_table(df: pd.DataFrame, cutoff: float = 0.70) -> pd.DataFrame:

@@ -15,7 +15,9 @@ COLUMNS = [
     "final_share", "private_share", "bea",
     "cr4", "cr8", "cr20", "cr50", "hhi", "firms",
     "rcptot", "payann", "benefit", "cstmtot", "valadd", "astend", "emp",
-    "pcm", "pcm_benefits", "ks", "log_ship",
+    "pchadvt", "imports", "exports",
+    "pcm", "pcm_benefits", "ks", "ks_imputed", "log_ship",
+    "adv", "rd", "imp_pen", "exp_share", "life",
 ]
 
 

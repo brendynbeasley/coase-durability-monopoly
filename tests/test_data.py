@@ -17,7 +17,8 @@ def panel():
 
 
 def test_panel_size(panel):
-    assert panel.groupby("year").size().to_dict() == {2017: 360, 2022: 346}
+    assert panel.groupby("year").size().to_dict() == {
+        2002: 473, 2007: 471, 2012: 364, 2017: 360, 2022: 346}
     assert not panel.duplicated(["naics", "year"]).any()
 
 
@@ -61,10 +62,41 @@ def test_final_share_fallback_for_merged_2022_codes():
 
 def test_headline_result_reproduces(panel):
     base = empirics.group_slopes(empirics.sample(panel))
+    assert base.n == 1982
+    assert base.slopes["nondurable"][0] == pytest.approx(0.121, abs=1e-3)
+    assert base.slopes["durable_final"][0] == pytest.approx(0.012, abs=1e-3)
+    assert base.diff_final[0] == pytest.approx(-0.109, abs=1e-3)
+
+
+def test_original_two_census_result_still_reproduces(panel):
+    base = empirics.group_slopes(empirics.sample(panel[panel.year >= 2017]))
     assert base.n == 699
-    assert base.slopes["nondurable"][0] == pytest.approx(0.120, abs=1e-3)
-    assert base.slopes["durable_final"][0] == pytest.approx(-0.029, abs=1e-3)
     assert base.diff_final[0] == pytest.approx(-0.148, abs=1e-3)
+
+
+def test_2002_capital_is_carried_back_from_2007(panel):
+    p02 = panel[panel.year == 2002]
+    assert p02.ks_imputed.sum() > 450
+    k07 = panel[panel.year == 2007].set_index("naics").ks
+    row = p02[p02.ks_imputed == 1].iloc[0]
+    assert row.ks == pytest.approx(k07[row.naics])
+
+
+def test_rd_and_service_life_ranges(panel):
+    assert panel.rd.notna().all()
+    assert panel.rd.between(0, 0.4).all()
+    s = panel[panel.year == 2017].set_index("naics")
+    assert s.loc["325412", "rd"] > 0.10       # pharmaceuticals are R&D intensive
+    assert s.loc["311111", "rd"] < 0.02       # pet food is not
+    assert s.loc["336411", "life"] > s.loc["336111", "life"]   # aircraft outlast cars
+    assert panel.life.dropna().between(1, 25).all()
+
+
+def test_rd_prefix_parser():
+    assert data._rd_prefixes("313–16") == ["313", "314", "315", "316"]
+    assert data._rd_prefixes("336411–13") == ["336411", "336412", "336413"]
+    assert data._rd_prefixes("3255, 3259") == ["3255", "3259"]
+    assert data._rd_prefixes("other 333") == ["333"]
 
 
 def test_bain_split_signs(panel):
