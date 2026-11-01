@@ -1,195 +1,153 @@
-# Does Durability Weaken Monopoly? Testing Coase (1972) on U.S. Manufacturing
+# Can You Monopolize Something That Lasts?
 
-Ronald Coase argued in 1972 that a firm selling a durable good cannot hold a monopoly price for long, because it ends up competing with the units it has already sold and with the price cuts its buyers expect it to make. If he was right, market concentration should do less to raise prices in industries that make long-lived goods than in industries whose products are used up. This repository tests that prediction on every U.S. manufacturing industry in the five Economic Censuses from 2002 to 2022, with controls for import competition, advertising and R&D, and pairs the test with simulations of the underlying theory. Everything runs from public data with one command.
+### In 1972, Ronald Coase argued that a company selling something durable ends up competing with itself. I tested the idea on twenty years of American manufacturing data.
 
-The answer depends on which comparison you make. **Across industries, the prediction holds clearly.** In nondurable industries, higher concentration goes with higher price-cost margins, the pattern Joe Bain documented in 1951. In industries making long-lived goods bought by households and equipment investors, the relationship is flat. The gap between the two slopes is −0.11 (p = 0.03), rises to −0.16 (p = 0.01) once import penetration, advertising and R&D are controlled for, and is negative in every census year and in all 18 cross-industry specifications. **Within industries over time, it does not hold.** When an industry's own concentration rises between censuses, its margin rises at least as much in long-lived durable industries as in nondurable ones. A continuous measure of product service life also shows no effect within the durable group. The evidence is consistent with Coase's mechanism operating as a persistent feature of durable-goods markets, but it cannot rule out fixed industry differences that I have not measured.
+---
+
+Four companies make 84% of the aircraft built in the United States, and Boeing alone accounts for most of the large passenger jets. Four companies, led by Thor Industries and Berkshire Hathaway's Forest River, make 83% of the country's motor homes. Whirlpool, GE Appliances and two others make 70% of its major household appliances, from refrigerators to washing machines. Each of these is a market most economists would call highly concentrated, and by the usual logic each should be unusually profitable.
+
+They aren't. After paying for materials and wages, aircraft makers keep about 24 cents of every sales dollar, motor home makers about 22 cents and heavy truck makers about 18 cents, all below the manufacturing average of 34 cents. Industries just as concentrated but selling things that get used up look very different. Tobacco companies keep 84 cents of every dollar, brewers 51 cents and cereal makers 35 cents.
+
+Ronald Coase, who later won the Nobel Prize, offered an explanation for this kind of pattern half a century ago. This project tests whether he was right.
+
+---
+
+## Coase's idea
+
+Most of what economists say about monopoly assumes the product gets used up. Cereal is eaten and gasoline is burned, so a company that controls the market can keep the price high and its customers will keep coming back.
+
+Coase asked what happens when the product lasts. His example was a single person who owns all the land in the country. The textbook answer is that he should sell only part of it at a high price and hold the rest back. Coase saw the flaw. Once the first buyers have paid, the owner is still holding valuable land, and selling more of it would only lower the value of land that now belongs to someone else. So he keeps selling, at lower and lower prices. Buyers can see this coming, and nobody pays a high price today when they can wait for a lower one tomorrow. The owner of every acre in the country ends up charging close to the competitive price, because his real competitor is himself a few months later.
+
+The same logic applies to anything durable, from airplanes to refrigerators. Every machine a company has already sold competes with the next one, and every price cut its customers expect pulls today's price down.
+
+A simulation of Coase's argument shows how large the effect can be. Imagine a product that buyers value at anywhere up to $100, which a company that could promise never to cut its price would sell for $50.
+
+| How often the seller can cut its price | First price it can charge | Profit compared with a true monopoly |
+|---|---|---|
+| Once a year | $23.58 | 47% |
+| Once a month | $8.35 | 17% |
+| Once a week | $4.20 | 8% |
+
+Companies have ways around this, and Coase listed them. They can lease instead of sell, so that any price cut hurts their own rental income. They can promise to buy products back at a high price. Or they can make products that wear out, so customers have to return. Car leases, software subscriptions and printers rented by the month are modern versions of the same idea. The [longer essay](docs/essay.md) in this repository goes through these strategies and the companies using them.
+
+---
+
+## Measuring concentration and margins
+
+Concentration is measured the way the Census Bureau measures it.
+
+> **Four-firm concentration ratio (CR4)** = sales of the 4 largest companies ÷ total sales of the industry
+
+Profitability is measured with the price-cost margin, the share of each sales dollar left after paying for materials, energy and wages.
+
+> **Margin** = (value of what the industry makes − materials and energy − payroll) ÷ sales
+
+A margin of 0.34 means that out of every $1 of sales, 34 cents is left to pay for equipment, research, advertising, interest, taxes and profit. Joe Bain showed in 1951 that more concentrated industries tend to have higher margins. If Coase was right, that should hold for goods that get used up and fade away for goods that last.
+
+---
+
+## How I tested it
+
+I collected every manufacturing industry in the five Economic Censuses from 2002 to 2022, about 2,000 industry-years covering $27 trillion of output, and sorted each one into three groups.
+
+| Group | Examples | Share of 2022 output |
+|---|---|---|
+| Goods that get used up | Food, beverages, fuel, chemicals, paper | 52% |
+| Durable parts and materials | Steel, semiconductors, bolts, engine parts | 27% |
+| Long-lasting goods owned by buyers | Cars, aircraft, appliances, furniture, machinery | 21% |
+
+The split between the last two groups comes from government input-output tables, which show whether a product ends up in a household or a business's equipment, where it is kept for years, or inside another product. Coase's argument is about the first case.
+
+I then asked how much a rise in concentration raises margins in each group, and checked whether the answer holds up after accounting for import competition, advertising spending and research spending.
+
+---
+
+## Concentration pays for goods that get used up, not for goods that last
 
 ![Concentration and margins by product type](figures/fig5_concentration_margins.png)
 
-## Research question and hypotheses
+Among industries whose products get used up, the more concentrated ones earn clearly higher margins. Going from an industry where the top four companies hold 20% of sales to one where they hold 80% is associated with a margin about 7 cents higher on every sales dollar. For long-lasting goods, the same jump in concentration is associated with almost no change at all.
 
-Coase's argument is about commitment. A monopolist that sells a good lasting forever would like to restrict supply, but once the first buyers have paid, it gains by selling more, and buyers who anticipate this refuse to pay the monopoly price. The simulations in this repository show the effect is large. A seller who can change its price once a month keeps only 17 percent of the monopoly profit, and one who can change it weekly keeps 8 percent (see [the theory section](#the-theory-behind-the-test)). The empirical question is whether this shows up in industry data.
+Bain's own test, which compares industries above and below his 70% line, shows the same thing.
 
-- **H1 (Bain).** Among nondurable industries, more concentrated industries earn higher price-cost margins.
-- **H2 (Coase).** The concentration-margin slope is flatter for durable-goods industries.
-- **H3.** The flattening is strongest for long-lived goods held by final owners, which is the case Coase described, and grows with the product's service life.
+| | Industries where the top 8 hold 70% or more | Everyone else | Gap |
+|---|---|---|---|
+| Goods that get used up | 37.6¢ | 33.3¢ | 4.3¢ |
+| Durable parts and materials | 34.1¢ | 32.8¢ | 1.3¢ |
+| Long-lasting goods | 32.9¢ | 33.0¢ | −0.1¢ |
 
-## Data
+*Margin per dollar of sales, all five censuses pooled.*
 
-| Source | Years | What it provides |
-|---|---|---|
-| Census Bureau, Economic Census, concentration tables | 2002, 2007, 2012, 2017, 2022 | Share of sales held by the 4, 8, 20 and 50 largest firms, HHI, number of firms, by 6-digit NAICS |
-| Census Bureau, Economic Census, manufacturing statistics | 2002–2022 | Shipments, payroll, benefits, value added, gross depreciable assets, advertising expense |
-| Census Bureau, Related Party Trade files | 2007–2022 | Imports and domestic exports by 6-digit NAICS, for import penetration |
-| NSF, Business Enterprise R&D Survey, table 17 | 2017, 2022 | R&D as a share of domestic sales, by industry (3- to 6-digit NAICS) |
-| BEA, 2017 detailed Use table | 2017 | Where each product goes, which identifies goods bought by final owners |
-| BEA, PEQ and PCE bridge tables, fixed-asset accounts | 2017 | Service life of the equipment and consumer durables each product is sold into |
+On $1 billion of sales, a gap of 4.3 cents comes to $43 million a year. For long-lasting goods, the most concentrated industries earn no more than anyone else.
 
-The panel has 2,014 industry-years, of which 1,982 have complete data for the baseline specification, covering $27 trillion of shipments over the five censuses. All files are downloaded directly from government servers with no API key. Their SHA-256 hashes are recorded in [`data/processed/manifest.json`](data/processed/manifest.json), and the processed panel is committed, so the results can be reproduced even if an agency later revises a file.
+The industries themselves show the contrast.
 
-## Method
+| What you know it as | Top 4's share | Who leads the industry | Margin |
+|---|---|---|---|
+| **Goods that get used up** | | | |
+| Cigarettes and tobacco | 91% | Altria, Reynolds American | 84¢ |
+| Breakfast cereal | 87% | General Mills, Kellogg's, Post, Quaker | 35¢ |
+| Corn syrup and starch | 80% | ADM, Cargill, Ingredion | 31¢ |
+| Beer | 64% | Anheuser-Busch, Molson Coors | 51¢ |
+| **Long-lasting goods** | | | |
+| Airplanes | 84% | Boeing, by a wide margin | 24¢ |
+| Motor homes | 83% | Thor Industries, Forest River, Winnebago | 22¢ |
+| Heavy trucks | 76% | Paccar, Daimler Truck, Volvo | 18¢ |
+| Major appliances | 70% | Whirlpool, GE Appliances | 38¢ |
+| Cars and light trucks | 58% | GM, Ford, Stellantis, Toyota | 20¢ |
 
-The outcome is the Collins-Preston price-cost margin.
+*2022 Economic Census. The Census does not name companies; the names are each industry's well-known leaders.*
 
-$$\text{PCM} = \frac{\text{value added} - \text{payroll}}{\text{shipments}}$$
+The pattern isn't perfect. Soybean processing is highly concentrated (ADM, Bunge and Cargill) and earns only 15 cents, and appliance makers do better than the other durable industries. Across hundreds of industries, though, the difference between the groups is large and consistent.
 
-Industries are sorted into three groups. *Nondurable* and *durable* follow the Census Bureau's M3 definitions by 3-digit NAICS. A durable industry is *durable final* when at least half of its domestic use goes to household consumption or equipment investment, according to the BEA Use table. The remaining durable industries are *durable intermediate*.
+---
 
-The main specification pools all five censuses and estimates a separate concentration slope for each group,
+## Imports, advertising and research don't explain it
 
-$$\text{PCM}_{it} = \alpha_g + \beta_g\,\text{CR4}_{it} + \gamma\,\frac{K}{S}_{it} + \delta \log S_{it} + \theta' X_{it} + \tau_t + \varepsilon_{it}$$
+The most obvious alternative explanation is foreign competition. Long-lasting goods face far more of it than goods that get used up. Imports supply about 37% of what Americans buy in a typical long-lasting goods industry, against 16% for goods that get used up, and a domestic company with 80% of American production may face plenty of competition from abroad.
 
-where *K/S* is gross depreciable assets over shipments, *S* is shipments, τ is a census-year effect, and *X* holds the additional controls.
+Accounting for imports makes the gap larger, not smaller. The same is true of advertising and research spending, which differ a great deal between industries and show up in measured margins. With all three accounted for, the difference between the two groups grows by about half, and its p-value, the usual measure of how easily a result like this could appear by chance, falls to about 0.01. In a separate check, I randomly reshuffled which industries counted as durable 2,000 times, and a gap as large as the real one appeared less than 2% of the time.
 
-| Control | Definition | Coverage |
-|---|---|---|
-| Import penetration | imports / (shipments + imports − exports), capped at 1 | 2007–2022 |
-| Advertising intensity | advertising expense / shipments | all years, 95% of industries |
-| R&D intensity | NSF R&D-to-sales ratio for the industry, averaged over 2017 and 2022 and held fixed | all years |
+---
 
-Standard errors are clustered by industry. H2 and H3 predict β for durable final goods to be below β for nondurables.
+## It's a difference between industries, not a change within them
 
-Service life is measured from BEA's fixed-asset accounts. For each equipment and consumer-durable category, depreciation divided by the average net stock gives the geometric depreciation rate *d*, and 1/*d* is the mean service life. Each product's service life is the average over the categories it is sold into, weighted by sales in the PEQ and PCE bridge tables. Values range from about 1 year for vehicle parts to 19 years for electrical transformers.
+![Comparing industries with each other and with themselves](figures/fig9_between_within.png)
 
-## Results
+Comparing different industries with each other has a weakness, because a cereal maker and an aircraft maker differ in many ways besides durability. So I also compared each industry with itself, asking whether margins rose in industries that became more concentrated between one census and the next.
 
-### Across industries
+Here the pattern reverses. When long-lasting goods industries consolidated, their margins rose at least as much as in other industries, and between 2002 and 2017 they rose more. The reversal is strongest from 2007 to 2012, the years of the Great Recession. Only in the most recent period, 2017 to 2022, does it point in Coase's direction.
 
-| | Baseline | + Import penetration | + Advertising | + R&D | + All controls |
-|---|---|---|---|---|---|
-| Nondurable slope | 0.121 (0.042) | 0.134 (0.052) | 0.117 (0.042) | 0.123 (0.043) | 0.143 (0.052) |
-| Durable intermediate slope | 0.035 (0.027) | 0.025 (0.033) | 0.040 (0.029) | 0.027 (0.027) | 0.033 (0.034) |
-| Durable final slope | 0.012 (0.028) | −0.008 (0.032) | 0.007 (0.027) | 0.001 (0.029) | −0.014 (0.031) |
-| **Final minus nondurable** | **−0.109 (p = 0.032)** | **−0.142 (p = 0.019)** | **−0.110 (p = 0.028)** | **−0.122 (p = 0.018)** | **−0.157 (p = 0.010)** |
-| N | 1,982 | 1,353 | 1,920 | 1,982 | 1,318 |
+One likely reason is the business cycle. Purchases of cars, appliances and equipment rise and fall far more sharply than purchases of food or fuel, and in a downturn weaker companies close while everyone's margins shrink, so concentration and margins can move together for reasons that have little to do with Coase. That explanation is plausible but the data can't prove it.
 
-To put the slopes in context, moving a nondurable industry from a four-firm share of 20 percent to 80 percent is associated with a margin about 7 percentage points higher. The same move in a long-lived durable industry is associated with no change. The controls matter in the direction one would hope. Long-lived durable industries face much more import competition than nondurable ones (median import penetration 0.37 against 0.16), which could have explained flat margins, but controlling for it makes the gap larger rather than smaller.
+What the evidence supports is narrower than "Coase was right." Markets for long-lasting goods are persistently different from markets for goods that get used up, in exactly the way he predicted. Whether that difference comes from his mechanism, or from something else that sets these industries apart, remains open.
 
-A permutation test that randomly reassigns the three product types across industries 2,000 times produces a gap as negative as the observed one in 1.8 percent of draws.
+---
 
-### Bain's 70 percent test, by product type
+## Who keeps a product matters more than how long it lasts
 
-| Group | Margin gap, CR8 ≥ 70% vs. < 70% (SE) |
-|---|---|
-| Nondurable | +4.3 points (1.1) |
-| Durable intermediate | +1.3 points (0.9) |
-| Durable final (long-lived) | −0.1 points (0.9) |
+If durability is what weakens market power, longer-lasting products should show the effect more strongly. I measured how long each product typically stays in use, from about a year for car parts to nearly twenty for electrical transformers, using government depreciation records. It made no difference. A product that lasts fifteen years shows the same flat relationship between concentration and margins as one that lasts four.
 
-![Bain split](figures/fig7_bain_split.png)
+What separates the groups is whether a durable product ends up owned by a household or business that keeps it, or gets built into something else. That fits the heart of Coase's argument, which is about a company competing with the stock of its own products already sitting in customers' hands.
 
-### Across industries versus within industries
+---
 
-The cross-industry gap is negative in every census year, from −0.05 in 2002 to −0.19 in 2022. The within-industry evidence points the other way. With industry fixed effects the durable-final slope is larger than the nondurable one (gap +0.08, p = 0.33), and in stacked changes between consecutive censuses it is clearly larger (+0.18, p = 0.01). The reversal comes from 2002–2017 and is strongest over 2007–2012, the period of the Great Recession. In 2017–2022 the within-industry gap is negative.
+## Why it matters
 
-![Between versus within](figures/fig9_between_within.png)
+For consumers, the results suggest that a company dominating a market for long-lasting goods has less power over prices than its market share implies, as long as it actually sells its products. That condition matters. Coase's argument implies that such a company has strong reasons to stop selling and start renting, or to make products that wear out, and the same simulations show leasing earns about 11% more than selling and that a company will deliberately make products less durable when production is cheap. Subscriptions for software, printers and car features are the strategies Coase described in 1972.
 
-These two results answer different questions. The cross-industry comparison asks whether durable-goods markets with high concentration earn less than one would expect from concentration alone, which is the long-run, structural form of Coase's argument. The within-industry comparison asks how margins respond when an industry's concentration changes over five years. Demand for durable goods swings with the business cycle far more than demand for nondurables, and downturns push out weaker firms while squeezing margins, so short-run changes in concentration and margins can move together for reasons that have nothing to do with Coase. That interpretation is plausible but not something the data can prove. The honest summary is that the Coase pattern is a robust feature of the cross-section, and that it is not identified from within-industry variation.
+For antitrust, market share alone is a weak guide in durable-goods markets. Regulators and courts would learn more from asking whether a dominant company can lock in its customers through leasing, repair restrictions or planned obsolescence, because those are the tools that restore the power durability takes away.
 
-### Service life
+---
 
-Among durable industries, the concentration slope does not vary with the product's service life (interaction −0.0008 per year of life, SE 0.0061, p = 0.90). A good that lasts 15 years shows the same flat relationship as one that lasts 4. What separates the groups is whether a durable good is held by its final owner or used up inside another product, not how many years it lasts. This part of H3 is not supported.
+## Limits of this study
 
-### Robustness
+The study compares whole industries rather than companies, and it finds a consistent difference between groups of industries rather than proof of cause, as the within-industry results make clear. The margin measure comes from government statistics and includes spending on equipment, research and advertising as well as profit. Concentration is measured nationally, so it misses regional markets. Some measurements are coarse. Research spending is available only for broad industry groups, import data starts in 2005, and the official durable classification has quirks, such as counting ammunition as durable. Industry codes also change between censuses, so some industries can't be followed over time.
 
-![Robustness](figures/fig6_slopes_by_specification.png)
+---
 
-Across 18 cross-industry specifications, the gap is negative in every one, significant at 5 percent in 12 and at 10 percent in 14. It is weakest with 3-digit subsector fixed effects (−0.012, p = 0.78), which compare only industries within the same subsector and remove most of the difference between durable and nondurable goods, and with shipment weights (−0.114, p = 0.33), which put most of the weight on a few very large industries such as petroleum refining and motor vehicles. Full tables are in [`results/empirics/summary.md`](results/empirics/summary.md).
+## Further reading
 
-## Who controls the concentrated durable markets
+[TECHNICAL.md](TECHNICAL.md) covers the data sources, methods, full statistical results and robustness checks, and how to reproduce everything with one command. [paper/technical-paper.md](paper/technical-paper.md) has the formal models and a paper-style write-up, and [results/empirics/summary.md](results/empirics/summary.md) has every table. [docs/essay.md](docs/essay.md) is a longer plain-language essay on Coase's paper and the companies using the strategies he described. A companion project, [Bain (1951) revisited](https://github.com/brendynbeasley/bain-1951-revisited), tests Bain's original question with company financial data.
 
-Census data identifies industries rather than firms, but it shows where control is concentrated. These are the most concentrated long-lived durable industries in 2022, using the private-buyer definition.
-
-| Industry | Top-4 share | Firms | Shipments ($bn) | Margin |
-|---|---|---|---|---|
-| Ammunition (except small arms) | 87% | 37 | 4.2 | 0.51 |
-| Computer storage devices | 84% | 38 | 4.7 | 0.21 |
-| Aircraft | 84% | 234 | 92.8 | 0.24 |
-| Motor homes | 83% | 58 | 7.4 | 0.22 |
-| Heavy duty trucks | 76% | 84 | 33.1 | 0.18 |
-| Small arms ammunition | 75% | 151 | 5.8 | 0.40 |
-| Burial caskets | 75% | 62 | 0.7 | 0.33 |
-| Travel trailers and campers | 71% | 575 | 27.6 | 0.24 |
-| Major household appliances | 70% | 123 | 23.7 | 0.38 |
-| Batteries | 69% | 234 | 28.2 | 0.39 |
-
-Aircraft, heavy trucks and motor homes all have four-firm shares above 75 percent and margins well below the manufacturing average of about 0.33. Ammunition is a reminder that the official durable classification is imperfect, since Census counts it as durable even though it is used up.
-
-## Limitations
-
-1. **Correlation, not causation.** The cross-industry gap could reflect fixed industry characteristics other than durability. The within-industry results show this possibility is real.
-2. **The price-cost margin is an accounting measure.** It includes returns to capital, advertising and R&D, which the controls address only in part.
-3. **National concentration ratios ignore imports and regional markets.** Import penetration is now controlled for, but geographic market definition is not.
-4. **Measurement choices.**
-   - R&D intensity is available only at a coarse industry level and only from 2015, so it is treated as a fixed industry trait.
-   - Import penetration is unavailable for 2002.
-   - 2002 capital intensity is carried back from 2007, because the 2002 census did not publish assets.
-   - The durable classification inherits quirks such as ammunition counting as durable.
-5. **NAICS codes change between censuses.** Industries are matched across years by identical codes, and BEA measures are matched by NAICS prefix.
-
-## The theory behind the test
-
-The `src/coase/dynamic.py` and `src/coase/durability.py` modules solve two standard models of durable-goods monopoly.
-
-| Result | Value |
-|---|---|
-| Profit of a durable monopolist relative to one that can commit, with yearly / monthly / weekly price changes (10% interest) | 47% / 17% / 8% |
-| Two-period profit from selling vs. leasing a fully durable good (Bulow 1982) | 0.45 vs. 0.50 |
-| Durability chosen by a selling monopolist when unit cost is low (c < 0.2) | Below the efficient level |
-
-![Coase conjecture](figures/fig2_coase_conjecture.png)
-
-The formal derivations and the full empirical section are in [`paper/technical-paper.md`](paper/technical-paper.md). A plain-language essay on the paper, the industries involved and what is at stake is in [`docs/essay.md`](docs/essay.md).
-
-## Reproduce
-
-Requires Python 3.10 or later. Exact package versions are pinned in `requirements-lock.txt`.
-
-```bash
-git clone https://github.com/brendynbeasley/coase-durability-monopoly.git
-cd coase-durability-monopoly
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements-lock.txt && pip install -e .
-make all
-```
-
-`make all` downloads the raw files (about 150 MB), builds `data/processed/industry_panel.csv`, runs the simulations and the empirical analysis, writes every table and figure, and runs the tests. The analysis takes under a minute after the download. Because the processed panel is committed, `make results` and `make test` work without downloading anything.
-
-## Repository layout
-
-```
-src/coase/
-  data.py          downloads and builds the industry panel (Census, BEA, NSF, trade)
-  empirics.py      hypotheses, regressions, robustness, permutation and within-industry tests
-  dynamic.py       infinite-horizon durable-goods monopoly (Coase conjecture)
-  durability.py    two-period selling vs. leasing and choice of durability
-  static.py        Coase's Figures I and II
-scripts/
-  build_data.py        raw files -> data/processed/industry_panel.csv
-  run_empirics.py      empirical tables and figures 5-9
-  run_experiments.py   theory tables and figures 1-4
-data/processed/    industry panel and manifest of source files with hashes
-results/           theory results and results/empirics/
-figures/           all charts
-paper/             technical paper
-docs/essay.md      plain-language essay
-tests/             model and data tests
-```
-
-## References
-
-- Bain, J. S. (1951). Relation of Profit Rate to Industry Concentration: American Manufacturing, 1936–1940. *Quarterly Journal of Economics*, 65(3), 293–324.
-- Bulow, J. (1982). Durable-Goods Monopolists. *Journal of Political Economy*, 90(2), 314–332.
-- Bulow, J. (1986). An Economic Theory of Planned Obsolescence. *Quarterly Journal of Economics*, 101(4), 729–749.
-- Coase, R. H. (1972). Durability and Monopoly. *Journal of Law & Economics*, 15(1), 143–149. [JSTOR](https://www.jstor.org/stable/725018)
-- Collins, N. R., & Preston, L. E. (1969). Price-Cost Margins and Industry Structure. *Review of Economics and Statistics*, 51(3), 271–286.
-- Gul, F., Sonnenschein, H., & Wilson, R. (1986). Foundations of Dynamic Monopoly and the Coase Conjecture. *Journal of Economic Theory*, 39(1), 155–190.
-- Stokey, N. (1981). Rational Expectations and Durable Goods Pricing. *Bell Journal of Economics*, 12(1), 112–128.
-- National Center for Science and Engineering Statistics. Business Enterprise Research and Development Survey, 2017 and 2022. https://ncses.nsf.gov
-- U.S. Bureau of Economic Analysis. Input-Output Accounts and Fixed Assets Accounts. https://www.bea.gov
-- U.S. Census Bureau. Economic Census, 2002–2022, and Related Party Trade. https://www.census.gov
-
-The original Coase paper is not included because it is under copyright.
-
-## License
-
-Code is released under the MIT License. Census, BEA and NSF data are public domain.
+The original paper is Ronald H. Coase, "Durability and Monopoly," *Journal of Law and Economics*, 1972. All data comes from the U.S. Census Bureau, the Bureau of Economic Analysis and the National Science Foundation, and is public.

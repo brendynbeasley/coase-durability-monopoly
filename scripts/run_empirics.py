@@ -24,6 +24,14 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 COLORS = {"nondurable": "#2e7d32", "durable_intermediate": "#888888", "durable_final": "#b03a2e"}
 plt.rcParams.update({"axes.spines.top": False, "axes.spines.right": False})
+# Labels for charts, written for readers who have not seen the method section.
+PLAIN = {
+    "nondurable": "Goods that get used up (food, fuel, chemicals)",
+    "durable_intermediate": "Durable parts and materials",
+    "durable_final": "Long-lasting goods owned by buyers (cars, planes, appliances)",
+}
+PLAIN_SHORT = {"nondurable": "Used up", "durable_intermediate": "Durable parts",
+               "durable_final": "Long-lasting goods"}
 
 
 def stars(p):
@@ -65,10 +73,10 @@ def fig_binscatter(df):
         b, a = np.polyfit(sub.cr4, sub.pcm, 1)
         xs = np.linspace(sub.cr4.min(), sub.cr4.max(), 50)
         ax.plot(xs, a + b * xs, color=COLORS[g], lw=2,
-                label=f"{em.GROUP_LABELS[g]} (slope {b:+.2f}, n={len(sub)})")
+                label=f"{PLAIN[g]}, slope {b:+.2f}")
     ax.set_xlabel("Share of industry sales held by the 4 largest firms (CR4)")
-    ax.set_ylabel("Price-cost margin")
-    ax.set_title("Concentration and margins, U.S. manufacturing 2017 and 2022\n(binned means of raw data)")
+    ax.set_ylabel("Margin: share of each sales dollar left\nafter materials and wages")
+    ax.set_title("More concentration means higher margins only for goods that get used up\nU.S. manufacturing industries, 2002–2022")
     ax.legend(frameon=False, fontsize=9)
     fig.tight_layout()
     fig.savefig(FIG / "fig5_concentration_margins.png", dpi=200)
@@ -83,7 +91,7 @@ def fig_slopes(specs):
         c = np.array([r.slopes[g][0] for r in specs])
         se = np.array([r.slopes[g][1] for r in specs])
         ax.errorbar(c, y + (1 - k) * 0.22, xerr=1.96 * se, fmt="o", color=COLORS[g],
-                    capsize=2, ms=5, label=em.GROUP_LABELS[g])
+                    capsize=2, ms=5, label=PLAIN_SHORT[g])
     ax.axvline(0, color="black", lw=0.8)
     ax.set_yticks(y)
     ax.set_yticklabels(names)
@@ -102,13 +110,13 @@ def fig_bain(bain):
     x = np.arange(len(b))
     ax.bar(x, 100 * b.gap, yerr=196 * b.gap_se, color=cols, capsize=4)
     for xi, v in zip(x, b.gap):
-        ax.text(xi + 0.12, 100 * v / 2, f"{100 * v:+.1f}", va="center", fontsize=11, color="white",
-                fontweight="bold")
+        ax.text(xi + 0.22, 100 * v + (0.35 if v >= 0 else -0.35), f"{100 * v:+.1f}",
+                va="center", fontsize=11, fontweight="bold")
     ax.set_xticks(x)
-    ax.set_xticklabels(b.group)
+    ax.set_xticklabels([PLAIN_SHORT[g] for g in em.GROUPS])
     ax.axhline(0, color="black", lw=0.8)
-    ax.set_ylabel("Margin gap, percentage points")
-    ax.set_title("Bain's test by product type: margin of industries with CR8 ≥ 70%\nminus margin of industries with CR8 < 70%")
+    ax.set_ylabel("Extra margin, percentage points")
+    ax.set_title("How much more the most concentrated industries earn\n(top 8 companies hold 70%+ of the market, versus everyone else)")
     fig.tight_layout()
     fig.savefig(FIG / "fig7_bain_split.png", dpi=200)
     plt.close(fig)
@@ -119,9 +127,9 @@ def fig_permutation(perm):
     ax.hist(perm["placebo"], bins=50, color="#bbbbbb")
     ax.axvline(perm["observed"], color=COLORS["durable_final"], lw=2.5,
                label=f"Observed gap {perm['observed']:.3f}  (p = {perm['p']:.3f})")
-    ax.set_xlabel("Durable-final slope minus nondurable slope")
+    ax.set_xlabel("Long-lasting goods minus used-up goods (effect of concentration on margins)")
     ax.set_ylabel("Random relabelings")
-    ax.set_title(f"Permutation test: {perm['draws']:,} random assignments of product types")
+    ax.set_title(f"How often a random sorting of industries produces a gap this large\n({perm['draws']:,} random sortings)")
     ax.legend(frameon=False)
     fig.tight_layout()
     fig.savefig(FIG / "fig8_permutation_test.png", dpi=200)
@@ -140,17 +148,17 @@ def fig_between_within(specs, fd_periods):
     ax.bar(x, c, yerr=1.96 * se, color=COLORS["durable_final"], capsize=4)
     ax.set_xticks(x)
     ax.set_xticklabels([r.name.split()[0] for r in yearly])
-    ax.set_title("A. Across industries, each census year")
-    ax.set_ylabel("Durable-final slope minus nondurable slope")
+    ax.set_title("A. Comparing industries with each other")
+    ax.set_ylabel("Long-lasting goods minus used-up goods\n(effect of concentration on margins)")
     ax = axes[1]
     x = np.arange(len(fd_periods))
     ax.bar(x, fd_periods.gap, yerr=1.96 * fd_periods.gap_se, color="#888888", capsize=4)
     ax.set_xticks(x)
     ax.set_xticklabels(fd_periods.period)
-    ax.set_title("B. Within industries, change between censuses")
+    ax.set_title("B. Comparing each industry with itself over time")
     for a in axes:
         a.axhline(0, color="black", lw=0.8)
-    fig.suptitle("Coase's prediction is a negative gap. It holds across industries, not within them over time.",
+    fig.suptitle("Coase predicts bars below zero. That holds across industries but not within them over time.",
                  fontsize=11)
     fig.tight_layout()
     fig.savefig(FIG / "fig9_between_within.png", dpi=200)

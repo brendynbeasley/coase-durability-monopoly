@@ -464,6 +464,13 @@ def attach_trade(df: pd.DataFrame) -> pd.DataFrame:
             continue
         t = trade(year)
         bundled = {c[:5] for c in t.naics if c.endswith("X")}
+        # Codes that exist on only one side (for example the 2022 census code
+        # 336110, which merged 336111 and 336112 that trade data still uses)
+        # are pooled the same way when the other side has codes with the same
+        # first five digits.
+        census_only = set(g.naics) - set(t.naics)
+        trade_only = set(t.naics) - set(g.naics)
+        bundled |= {c[:5] for c in census_only} & {c[:5] for c in trade_only}
         t["key"] = np.where(t.naics.str.endswith("X"), t.naics.str[:5], t.naics)
         t.loc[t.naics.str[:5].isin(bundled), "key"] = t.naics.str[:5]
         g["key"] = np.where(g.naics.str[:5].isin(bundled), g.naics.str[:5], g.naics)
